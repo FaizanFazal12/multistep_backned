@@ -51,38 +51,36 @@ const formsController = {
       const { data: body } = req.body;
       const data = JSON.parse(body);
       const resumeFile = req.file;
-  
+
       const { error } = editSchema.validate(data);
       if (error) {
         return next(error);
       }
-  
-      const form = await Form.findById(id);
-      if (!form) {
-        return next({ status: 404, message: 'Form submission not found' });
+
+      if (resumeFile) {
+        data.employment.resume = resumeFile.path;
       }
-  
-      const updateData = {};
-      if (data.personal) updateData.personal = data.personal;
-      if (data.contact) updateData.contact = data.contact;
-      if (data.employment) {
-        updateData.employment = {
-          ...data.employment,
-          ...(resumeFile && { resume: resumeFile.path }),
-        };
-      }
-      if (data.financial) updateData.financial = data.financial;
-      if (data.preferences) updateData.preferences = data.preferences;
-  
-      Object.assign(form, updateData);
-      await form.save();
-  
-      return res.status(200).json({ form, success: true });
+
+      console.log(data)
+
+      const updatedForm = await Form.findOneAndUpdate(
+        { _id: id },
+        { $set:data },
+        {
+          new: true,
+          upsert: true,
+          runValidators: true,
+        }
+      );
+
+
+      return res.status(200).json({ form: updatedForm, success: true });
     } catch (error) {
       return next(error);
     }
   },
-  
+
+
 
   async delete(req, res, next) {
     try {

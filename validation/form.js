@@ -69,6 +69,7 @@ const employmentSchema = Joi.object({
     'string.empty': 'Job Title is required',
     'any.required': 'Job Title is required',
   }),
+  resume: Joi.string().optional(), 
   employmentStatus: Joi.string()
     .valid('Employed', 'Unemployed', 'Student')
     .required()

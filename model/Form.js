@@ -84,7 +84,7 @@ const formSchema = new mongoose.Schema(
       },
       resume: {
         type: String,
-        required: false,
+        required: true,
       },
     },
     financial: {
